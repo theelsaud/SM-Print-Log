@@ -6,7 +6,7 @@ public Plugin myinfo =
 {
 	name	=	"[SM] Print Log",
 	author	=	"FIVE",
-	version	=	"1.0",
+	version	=	"1.0.1",
 	url		=	"https://hlmod.ru"
 };
 
@@ -31,7 +31,7 @@ Action cmd_slog(int iClient, int iArgs)
 
     if(iArgs != 2) 
     {
-        PrintToConsole(iClient, "sm_slog <path to log> <key for search>");
+        ReplyToCommand(iClient, "sm_slog <path to log> <key for search>");
         return Plugin_Handled;
     }
 
@@ -93,12 +93,12 @@ void PrintFilesOnDir(int iClient, char[] sPath, int iStep)
             case FileType_Directory:
             {
                 iStep++;
-                PrintToConsole(iClient, "> %s %s:", sSteps, sFileName);
+                ReplyToCommand(iClient, "> %s %s:", sSteps, sFileName);
                 PrintFilesOnDir(iClient, sPathFull, iStep);
             }
             case FileType_File:
             {
-                PrintToConsole(iClient, "%s%s", sSteps, sFileName);
+                ReplyToCommand(iClient, "%s%s", sSteps, sFileName);
             }
         }
     } 
@@ -124,7 +124,7 @@ bool PrintLog(int iClient, char[] sPath, int iPrintLines = 10)
         FileSeek(hFile, SEEK_CUR, SEEK_SET);
 
         iStartLine = iCountLines - iPrintLines
-        PrintToConsole(iClient, "Lines: %i (%i)", iCountLines, iStartLine);
+        ReplyToCommand(iClient, "> Lines: %i (%i)", iCountLines, iStartLine);
 
         iCountLines = 0;
 
@@ -135,7 +135,7 @@ bool PrintLog(int iClient, char[] sPath, int iPrintLines = 10)
             
             if(iCountLines > iStartLine)
             {
-                PrintToConsole(iClient, sFullPath);
+                ReplyToCommand(iClient, sFullPath);
             }
         }
 
@@ -146,11 +146,12 @@ bool PrintLog(int iClient, char[] sPath, int iPrintLines = 10)
         return true;
     }
 
-    PrintToConsole(iClient, "File not found...");
+    ReplyToCommand(iClient, "File not found...");
 
     return false;
 }
 
+// Thanks L1MON for the idea :D
 bool SearhInLog(int iClient, char[] sPath, char[] sSearchKey)
 {
     char sFullPath[PLATFORM_MAX_PATH];
@@ -167,7 +168,7 @@ bool SearhInLog(int iClient, char[] sPath, char[] sSearchKey)
             ReadFileLine(hFile, sFullPath, sizeof(sFullPath));
             if(StrContains(sFullPath, sSearchKey) != -1)
             {
-                PrintToConsole(iClient, sFullPath);
+                ReplyToCommand(iClient, sFullPath);
                 iCountLines++;
             }
         }
@@ -175,13 +176,13 @@ bool SearhInLog(int iClient, char[] sPath, char[] sSearchKey)
 
         CloseHandle(hFile);
 
-        if(iCountLines == 0) PrintToConsole(iClient, "Not found %s on %s", sSearchKey, sPath);
+        if(iCountLines == 0) ReplyToCommand(iClient, "Not found %s on %s", sSearchKey, sPath);
         
 
         return true;
     }
 
-    PrintToConsole(iClient, "File not found...");
+    ReplyToCommand(iClient, "File not found...");
 
     return false;
 }
